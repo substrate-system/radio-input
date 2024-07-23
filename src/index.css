@@ -6,6 +6,7 @@ radio-input {
     & .radio-input {
         margin-right: 1rem;
         cursor: pointer;
+
         & input {
             cursor: pointer;
         }
@@ -16,16 +17,15 @@ radio-input {
         gap: 0.5em;
 
         & input[type="radio"] {
-            -webkit-appearance: none;
             appearance: none;
             /* For iOS < 15 to remove gradient background */
             background-color: #fff;
             margin: 0;
             font: inherit;
-            color: currentColor;
+            color: currentcolor;
             width: 1.15em;
             height: 1.15em;
-            border: 0.15em solid currentColor;
+            border: 0.15em solid currentcolor;
             border-radius: 50%;
             display: grid;
             place-content: center;
