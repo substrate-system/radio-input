@@ -1,14 +1,15 @@
+:root {
+    --form-control-color: #4281CB;
+}
+
 radio-input {
     & .radio-input {
-        --form-control-color: #4281CB;
-
         margin-right: 1rem;
         cursor: pointer;
         & input {
             cursor: pointer;
         }
 
-        font-family: system-ui, sans-serif;
         font-size: 1.5rem;
         display: grid;
         grid-template-columns: 1em auto;

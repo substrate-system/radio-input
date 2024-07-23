@@ -1,6 +1,5 @@
 {
-  "name": "@nichoth/example-webcomponent",
-  "private": true,
+  "name": "@substrate-system/radio-input",
   "type": "module",
   "version": "0.0.0",
   "main": "dist/index.js",
@@ -27,6 +26,27 @@
     "postversion": "git push --follow-tags && npm publish",
     "prepublishOnly": "npm run build"
   },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./css": "./dist/style.css",
+    "./css/min": "./dist/style.min.css",
+    "./*": {
+      "import": [
+        "./dist/*.js",
+        "./dist/*"
+      ],
+      "require": [
+        "./dist/*.cjs",
+        "./dist/*"
+      ]
+    }
+  },
+  "dependencies": {
+    "@substrate-system/util": "^0.1.6"
+  },
   "devDependencies": {
     "@bicycle-codes/debug": "^0.6.13",
     "@bicycle-codes/dom": "^0.0.23",
@@ -50,25 +70,25 @@
     "typescript": "^5.4.5",
     "vite": "^5.2.11"
   },
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./*": {
-      "import": [
-        "./dist/*.js",
-        "./dist/*"
-      ],
-      "require": [
-        "./dist/*.cjs",
-        "./dist/*"
-      ]
-    }
-  },
   "author": "nichoth <nichoth@nichoth.com> (https://nichoth.com)",
   "license": "MIT",
-  "dependencies": {
-    "@substrate-system/util": "^0.1.6"
-  }
+  "description": "Radio input with style",
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/substrate-system/radio-input.git"
+  },
+  "keywords": [
+    "radio",
+    "web",
+    "component"
+  ],
+  "types": "./dist/index.d.ts",
+  "bugs": {
+    "url": "https://github.com/substrate-system/radio-input/issues"
+  },
+  "homepage": "https://github.com/substrate-system/radio-input#readme"
 }

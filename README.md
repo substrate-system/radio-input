@@ -1,56 +1,99 @@
-# template web component
+# radio input
+![tests](https://github.com/substrate-system/radio-input/actions/workflows/nodejs.yml/badge.svg)
+[![types](https://img.shields.io/npm/types/@substrate-system/radio-input?style=flat-square)](README.md)
+[![module](https://img.shields.io/badge/module-ESM%2FCJS-blue?style=flat-square)](README.md)
+[![install size](https://packagephobia.com/badge?p=@substrate-system/radio-input)](https://packagephobia.com/result?p=@substrate-system/radio-input)
+[![dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen.svg?style=flat-square)](package.json)
+[![semantic versioning](https://img.shields.io/badge/semver-2.0.0-blue?logo=semver&style=flat-square)](https://semver.org/)
+[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
-A template for vanilla web components.
+Radio inputs with some style.
 
-## see also
+[See a live demo](https://substrate-system.github.io/radio-input/)
 
-* [Web Component lifecycle methods](https://gomakethings.com/the-web-component-lifecycle-methods/)
-* [How to detect when attributes change on a Web Component](https://gomakethings.com/how-to-detect-when-attributes-change-on-a-web-component/)
+<!-- toc -->
 
-## use
-1. Use the template button in github. Or clone this then
-`rm -rf .git && git init`. Then `npm i && npm init`.
+## install
 
-2. Edit the source code in `src/index.ts`.
+```sh
+npm i -S @substrate-system/radio-input
+```
 
-3. Delete either `.github/workflows/gh-pages-docs.yml` or `.github/workflows/gh-pages.yml`, depending on whether you want to deploy an example or docs to github pages.
+## API
 
-4. __Edit things__
-    * Use `./README.example.md` as a starter for docs:
-    ```sh
-    cp ./README.example.md ./README.md
-    ```
-    * edit the [build-example](https://github.com/nichoth/template-web-component/blob/c580636f1c912fe2633f7c2478f28b11729c9b80/package.json#L20) command in `package.json` so that it has the right
-    namespace for github pages
+This exposes ESM and common JS via [package.json `exports` field](https://nodejs.org/api/packages.html#exports).
 
-## featuring
+### ESM
+```js
+import '@substrate-system/radio-input'
+```
 
-* compile the source to both ESM and CJS format, and put compiled files in `dist`.
-* ignore `dist` and `*.js` in git, but don't ignore them in npm. That way we
-  don't commit any compiled code to git, but it is available to consumers.
-* use npm's `prepublishOnly` hook to compile the code before publishing to npm.
-* use [exports](./package.json#L41) field in `package.json` to make sure the right format is used
-  by consumers.
-* `preversion` npm hook -- lint
-* `postversion` npm hook -- `git push --follow-tags && npm publish`
-* eslint -- `npm run lint`
-* tests run in a browser environment via `tape-run` -- see [`npm test`](./package.json#L12).
-  Includes `tap` testing tools -- [tapzero](https://github.com/bicycle-codes/tapzero)
-  and [tap-spec](https://www.npmjs.com/package/tap-spec)
-* CI via github actions
+### attributes
 
-## the component
+In addition to standard `input[type=radio]` attributes, you can pass in the following
 
-See *[Web Component lifecycle methods](https://gomakethings.com/the-web-component-lifecycle-methods/)*.
+#### `label`
+Pass in some text to use as the label element.
 
-### [attributeChangedCallback](https://gomakethings.com/how-to-detect-when-attributes-change-on-a-web-component/#the-attributechangedcallback-method)
+## CSS
 
-> runs whenever an attribute on the Web Component is added, removed, or changes in value.
+### Import CSS
 
-> For performance reasons, the attributeChangedCallback() method only watches and reacts to attributes you tell it to. To do that, you create a `static` `observedAttributes` property, with an array of attributes to watch as its value.
+```js
+import '@substrate-system/radio-input/css'
+```
 
-> You can use any attributes you’d like, including non-standard ones.
+Or minified:
+```js
+import '@substrate-system/radio-input/css/min'
+```
 
+### CSS variables
+Override these to customize
 
-### [disconnectedCallback](https://gomakethings.com/the-web-component-lifecycle-methods/#the-connectedcallback-and-disconnectedcallback-methods)
+```css
+radio-input {
+    --form-control-color: #4281CB;
+}
+```
 
+## Example
+This calls the global function `customElements.define`. Just import, then use
+the tag in your HTML.
+
+```js
+import '@substrate-system/radio-input'
+import '@substrate-system/radio-input/css'
+```
+
+### HTML
+```html
+<form>
+    <radio-input
+        name="example"
+        value="example1"
+        label="example one"
+    ></radio-input>
+    <radio-input
+        name="example"
+        value="example2"
+        label="example two"
+    ></radio-input>
+
+    <button type="submit">submit</button>
+</form>
+```
+
+### pre-built JS
+This package exposes minified JS files too. Copy them to a location that is
+accessible to your web server, then link to them in HTML.
+
+#### copy
+```sh
+cp ./node_modules/@substrate-system/radio-input/dist/index.min.js ./public/radio-input.min.js
+```
+
+#### HTML
+```html
+<script type="module" src="./radio-input.min.js"></script>
+```
