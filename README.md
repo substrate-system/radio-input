@@ -31,7 +31,7 @@ npm i -S @substrate-system/radio-input
 
 ## API
 
-This exposes ESM and common JS via [package.json `exports` field](https://nodejs.org/api/packages.html#exports). Just import the package, then you can use the tag, `<radio-input>` , in HTML.
+This exposes ESM and common JS via [package.json `exports` field](https://nodejs.org/api/packages.html#exports). Just import the package, then use the tag, `<radio-input>`, in HTML.
 
 ### ESM
 ```js
