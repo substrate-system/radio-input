@@ -12,6 +12,19 @@ Radio inputs with some style.
 
 <!-- toc -->
 
+- [install](#install)
+- [API](#api)
+  * [ESM](#esm)
+  * [attributes](#attributes)
+- [CSS](#css)
+  * [Import CSS](#import-css)
+  * [CSS variables](#css-variables)
+- [Example](#example)
+  * [HTML](#html)
+  * [pre-built JS](#pre-built-js)
+
+<!-- tocstop -->
+
 ## install
 
 ```sh
