@@ -94,16 +94,23 @@ import '@substrate-system/radio-input/css'
 </form>
 ```
 
-### pre-built JS
-This package exposes minified JS files too. Copy them to a location that is
+### pre-built
+This package exposes minified JS and CSS files too. Copy them to a location that is
 accessible to your web server, then link to them in HTML.
 
 #### copy
 ```sh
 cp ./node_modules/@substrate-system/radio-input/dist/index.min.js ./public/radio-input.min.js
+cp ./node_modules/@substrate-system/radio-input/dist/style.min.css ./public/radio-input.min.css
 ```
 
 #### HTML
 ```html
-<script type="module" src="./radio-input.min.js"></script>
+<head>
+    <link rel="stylesheet" href="./radio-input.min.css">
+</head>
+<body>
+    <!-- ... -->
+    <script type="module" src="./radio-input.min.js"></script>
+</body>
 ```
