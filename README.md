@@ -6,9 +6,7 @@
 [![semantic versioning](https://img.shields.io/badge/semver-2.0.0-blue?logo=semver&style=flat-square)](https://semver.org/)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
-Radio inputs with some style.
-
-[See a live demo](https://substrate-system.github.io/radio-input/)
+Radio inputs with some style. [See a live demo](https://substrate-system.github.io/radio-input/)
 
 <!-- toc -->
 
