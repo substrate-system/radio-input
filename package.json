@@ -67,5 +67,8 @@
     }
   },
   "author": "nichoth <nichoth@nichoth.com> (https://nichoth.com)",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@substrate-system/util": "^0.1.6"
+  }
 }

@@ -1,6 +1,28 @@
 import '../src/index.css'
 import '../src/index.js'
+import './index.css'
+import Debug from '@bicycle-codes/debug'
+const debug = Debug()
 
 document.body.innerHTML += `
-    <example-component></example-component>
+    <form>
+        <radio-input
+            name="example"
+            value="example1"
+            label="example one"
+        ></radio-input>
+        <radio-input
+            name="example"
+            value="example2"
+            label="example two"
+        ></radio-input>
+
+        <button type="submit">submit</button>
+    </form>
 `
+
+document.querySelector('form')?.addEventListener('submit', ev => {
+    ev.preventDefault()
+    const els = (ev.target as HTMLFormElement).elements
+    debug('submit, `example.value`', els['example'].value)
+})

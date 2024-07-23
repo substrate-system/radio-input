@@ -1,14 +1,15 @@
 import { test } from '@bicycle-codes/tapzero'
-import { waitFor } from '@bicycle-codes/dom'
 import '../src/index.js'
 
-test('example', async t => {
+test('radio-input', t => {
     document.body.innerHTML += `
-        <example-component class="test">
-        </example-component>
+        <radio-input
+            name="example"
+            value="example1"
+            label="example one"
+        ></radio-input>
     `
 
-    const el = await waitFor('example-component')
-
-    t.ok(el, 'should find an element')
+    const el = document.querySelector('radio-input input[type="radio"]')
+    t.ok(el, 'should find a radio input')
 })
