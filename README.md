@@ -19,7 +19,7 @@ Radio inputs with some style. [See a live demo](https://substrate-system.github.
   * [CSS variables](#css-variables)
 - [Example](#example)
   * [HTML](#html)
-  * [pre-built JS](#pre-built-js)
+  * [pre-built](#pre-built)
 
 <!-- tocstop -->
 
