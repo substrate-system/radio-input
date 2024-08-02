@@ -8,8 +8,9 @@ declare global {
 }
 
 export class RadioInput extends HTMLElement {
-    connectedCallback () {
-        if (this.innerHTML) return
+    constructor () {
+        super()
+
         const attrs = Array.from(this.attributes)
         const obj = attributesAsObject(attrs)
         const labelText = this.getAttribute('label')
