@@ -1,4 +1,7 @@
-import { attributesAsObject, setAttributes } from '@substrate-system/util'
+import {
+    toAttributes,
+    type Attrs
+} from '@substrate-system/web-component/attributes'
 
 // for docuement.querySelector
 declare global {
@@ -11,19 +14,18 @@ export class RadioInput extends HTMLElement {
     constructor () {
         super()
 
-        const attrs = Array.from(this.attributes)
-        const obj = attributesAsObject(attrs)
         const labelText = this.getAttribute('label')
-
         if (!labelText) throw new Error('Missing label')
 
+        const obj:Attrs = {}
+        for (const attr of Array.from(this.attributes)) {
+            obj[attr.name] = attr.value
+        }
+
         this.innerHTML = `<label class="radio-input">
-            <input type="radio" />
+            <input type="radio" ${toAttributes(obj)} />
             ${labelText}
         </label>`
-
-        const input = this.querySelector('input')!
-        setAttributes(input, obj)
     }
 }
 

@@ -1,8 +1,8 @@
 import '../src/index.css'
 import '../src/index.js'
 import './index.css'
-import Debug from '@bicycle-codes/debug'
-const debug = Debug()
+import Debug from '@substrate-system/debug'
+const debug = Debug('radio-input')
 
 document.body.innerHTML += `
     <form>
