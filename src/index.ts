@@ -11,8 +11,11 @@ declare global {
 }
 
 export class RadioInput extends HTMLElement {
-    constructor () {
-        super()
+    private _initialized = false
+
+    connectedCallback () {
+        if (this._initialized) return
+        this._initialized = true
 
         const labelText = this.getAttribute('label')
         if (!labelText) throw new Error('Missing label')
