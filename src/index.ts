@@ -7,11 +7,12 @@ import { define } from '@substrate-system/web-component/util'
 // for docuement.querySelector
 declare global {
     interface HTMLElementTagNameMap {
-        'radio-input': RadioInput
+        'radio-input':RadioInput
     }
 }
 
 export class RadioInput extends HTMLElement {
+    static TAG = 'radio-input'
     static observedAttributes = ['label', 'name', 'value', 'checked']
 
     handleChange_label (oldValue:string, newValue:string) {
