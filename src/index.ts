@@ -26,14 +26,9 @@ export class RadioInput extends WebComponent.create('radio-input') {
 
     handleChange_label (_oldValue:string, newValue:string) {
         if (newValue === null) return
-        const label = this.querySelector('label')
-        if (!label) return
-        label.childNodes.forEach(node => {
-            if (node.nodeType === Node.TEXT_NODE) {
-                node.textContent =
-                    `\n            ${newValue}\n        `
-            }
-        })
+        const span = this.querySelector('label span')
+        if (!span) return
+        span.textContent = newValue
     }
 
     async attributeChangedCallback (
@@ -84,7 +79,7 @@ export class RadioInput extends WebComponent.create('radio-input') {
         this.innerHTML = `<label class="radio-input">
             <input type="radio"
                 ${toAttributes(inputAttrs)} />
-            ${labelText}
+            <span>${labelText}</span>
         </label>`
 
         this._forwarding = true
