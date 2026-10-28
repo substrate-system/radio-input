@@ -14,6 +14,8 @@ Radio inputs with some style. [See a live demo](https://substrate-system.github.
 - [API](#api)
   * [ESM](#esm)
   * [attributes](#attributes)
+  * [Render the markup yourself](#render-the-markup-yourself)
+  * [JavaScript API](#javascript-api)
 - [CSS](#css)
   * [Import CSS](#import-css)
   * [CSS variables](#css-variables)
@@ -46,7 +48,82 @@ import '@substrate-system/radio-input/css/min'
 In addition to standard `input[type=radio]` attributes, you can pass in the following
 
 #### `label`
-Pass in some text to use as the label element.
+Pass in some text to use as the label element. It is rendered as text,
+not HTML.
+
+Without a `label`, a bare `<input>` is rendered. Give it an accessible
+name with `aria-label` or `aria-labelledby`.
+
+```html
+<radio-input name="size" value="s" aria-label="Small"></radio-input>
+```
+
+#### forwarded attributes
+
+These are copied to the inner `<input>` and stay on the host. Removing
+one from the host removes it from the input too:
+
+`name`, `value`, `checked`, `disabled`, `required`, and `form`.
+
+These describe the focusable control, so they are moved to the inner
+`<input>` and removed from the host when the element renders:
+
+`id`, `tabindex`, `autofocus`, and every `aria-*` attribute.
+
+Because they are moved, changing one of these on the host after the
+element renders does nothing. Change it on the inner input instead,
+with the `control` property. When you
+[render the markup yourself](#render-the-markup-yourself), nothing is
+moved: put these attributes on your `<input>` directly.
+
+### Render the markup yourself
+
+If the host already contains an `<input type="radio">` when it
+connects, the element keeps that node and only adds behavior. Nothing
+is replaced. Use this with a framework like Preact, so the framework
+owns every node.
+
+```html
+<radio-input name="size">
+  <label class="radio-input">
+    <input type="radio" value="s">
+    <span>Small</span>
+  </label>
+</radio-input>
+```
+
+Use the `radio-input` class on the label to get the default layout.
+The `label` attribute is ignored in this case, and the inner input's
+own attributes are left alone.
+
+### JavaScript API
+
+```js
+const radio = document.querySelector('radio-input')
+
+// Get/set the current checked state of the inner input
+console.log(radio.checked)  // false
+radio.checked = true
+
+// Get/set value
+console.log(radio.value)  // "example1"
+radio.value = "example3"
+
+// Get/set disabled state
+console.log(radio.disabled)  // false
+radio.disabled = true
+
+// The inner input
+radio.control?.setAttribute('aria-invalid', 'true')
+
+// Get/set the id of the inner input
+console.log(radio.inputId)  // ""
+radio.inputId = "my-radio"
+```
+
+The `checked` attribute sets the default state, like it does on a
+native input. Once someone picks a radio, use the `checked` property
+to read or change the current state.
 
 ## CSS
 
@@ -62,13 +139,24 @@ import '@substrate-system/radio-input/css/min'
 ```
 
 ### CSS variables
-Override these to customize
+
+These variables are shared with the other `@substrate-system` form
+controls, so an app can set them once. Each one has a fallback.
 
 ```css
-radio-input {
-    --form-control-color: #4281CB;
+:root {
+    --substrate-accent: currentColor;  /* the checked dot */
+    --substrate-surface: #fff;  /* the circle background */
+    --substrate-border: currentColor;  /* the circle border */
+    --substrate-focus: currentColor;  /* focus ring color */
+    --substrate-focus-width: 2px;  /* focus ring width */
 }
 ```
+
+`--form-control-color` still works as a fallback for
+`--substrate-accent`.
+
+The label text inherits its font size.
 
 ## Example
 This calls the global function `customElements.define`. Just import, then use

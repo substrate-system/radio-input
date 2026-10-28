@@ -88,5 +88,10 @@
   "bugs": {
     "url": "https://github.com/substrate-system/radio-input/issues"
   },
-  "homepage": "https://github.com/substrate-system/radio-input"
+  "homepage": "https://github.com/substrate-system/radio-input",
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "lightningcss-cli@1.33.0": true,
+    "fsevents@2.3.3": true
+  }
 }

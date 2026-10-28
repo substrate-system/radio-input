@@ -1,7 +1,3 @@
-:root {
-    --form-control-color: #4281CB;
-}
-
 radio-input {
     & .radio-input {
         margin-right: 1rem;
@@ -11,39 +7,48 @@ radio-input {
             cursor: pointer;
         }
 
-        font-size: 1.5rem;
         display: grid;
         grid-template-columns: 1em auto;
         gap: 0.5em;
+    }
 
-        & input[type="radio"] {
-            appearance: none;
-            /* For iOS < 15 to remove gradient background */
-            background-color: #fff;
-            margin: 0;
-            font: inherit;
-            color: currentcolor;
-            width: 1.15em;
-            height: 1.15em;
-            border: 0.15em solid currentcolor;
+    & input[type="radio"] {
+        appearance: none;
+        /* For iOS < 15 to remove gradient background */
+        background-color: var(--substrate-surface, #fff);
+        margin: 0;
+        font: inherit;
+        color: currentcolor;
+        width: 1.15em;
+        height: 1.15em;
+        border: 0.15em solid var(--substrate-border, currentcolor);
+        border-radius: 50%;
+        display: grid;
+        place-content: center;
+        cursor: pointer;
+
+        &::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
             border-radius: 50%;
-            display: grid;
-            place-content: center;
-
-            &::before {
-                content: "";
-                width: 0.65em;
-                height: 0.65em;
-                border-radius: 50%;
-                transform: scale(0);
-                transition: 120ms transform ease-in-out;
-                box-shadow: inset 1em 1em var(--form-control-color);
-            }
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(
+                --substrate-accent,
+                var(--form-control-color, currentcolor)
+            );
+        }
 
         &:checked::before {
-                appearance: initial;
-                transform: scale(1);
-            }
+            appearance: initial;
+            transform: scale(1);
+        }
+
+        &:focus-visible {
+            outline: var(--substrate-focus-width, 2px) solid
+                var(--substrate-focus, currentcolor);
+            outline-offset: 2px;
         }
     }
 }
