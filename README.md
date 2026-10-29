@@ -66,15 +66,17 @@ one from the host removes it from the input too:
 `name`, `value`, `checked`, `disabled`, `required`, and `form`.
 
 These describe the focusable control, so they are moved to the inner
-`<input>` and removed from the host when the element renders:
+`<input>` and removed from the host. That happens when the element
+renders, and again whenever one is set on the host later:
 
 `id`, `tabindex`, `autofocus`, and every `aria-*` attribute.
 
-Because they are moved, changing one of these on the host after the
-element renders does nothing. Change it on the inner input instead,
-with the `control` property. When you
-[render the markup yourself](#render-the-markup-yourself), nothing is
-moved: put these attributes on your `<input>` directly.
+Because they are moved, removing one from the host afterwards does
+nothing: it is no longer there. To set and clear these from a
+framework, use the [`controlAttributes`](#controlattributes) property,
+or change the inner input directly with the `control` property. When
+you [render the markup yourself](#render-the-markup-yourself), nothing
+is moved: put these attributes on your `<input>` directly.
 
 ### Render the markup yourself
 
@@ -124,6 +126,33 @@ radio.inputId = "my-radio"
 The `checked` attribute sets the default state, like it does on a
 native input. Once someone picks a radio, use the `checked` property
 to read or change the current state.
+
+#### `controlAttributes`
+
+Use this property to set and clear the inner input's `aria-*`,
+`tabindex`, and `autofocus` from a framework. Each value you set
+replaces the last one, so a name it no longer lists is removed from the
+input. `null` clears everything it set. Write names as lowercase
+attribute names, like `tabindex`, not `tabIndex`. Other names,
+including `id`, are ignored; use `inputId` for the id.
+
+Values are written the way Preact writes attributes. `null` and
+`undefined` remove the attribute. For `aria-*`, `true` and `false`
+become `"true"` and `"false"`. For other names, `true` adds the
+attribute and `false` removes it.
+
+```js
+import { html } from 'htm/preact'
+
+function Choice ({ bad }) {
+    return html`<radio-input
+        name="size"
+        value="s"
+        label="Small"
+        controlAttributes=${{ 'aria-invalid': bad }}
+    ></radio-input>`
+}
+```
 
 ## CSS
 

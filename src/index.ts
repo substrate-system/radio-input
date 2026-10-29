@@ -24,12 +24,52 @@ const MIRRORED = [
  */
 const MOVED = ['id', 'tabindex', 'autofocus']
 
+/**
+ * Attributes for the inner input, keyed by name. Values follow Preact:
+ * `null` and `undefined` remove the attribute, `aria-*` booleans become
+ * `"true"` and `"false"`, and for other names `true` is present and
+ * `false` removes it.
+ */
+export type ControlAttributes = Record<
+    string,
+    string|number|boolean|null|undefined
+>
+
+/**
+ * The names `controlAttributes` accepts. `id` goes through `inputId`.
+ */
+function isControlName (name:string):boolean {
+    return name === 'tabindex' ||
+        name === 'autofocus' ||
+        name.startsWith('aria-')
+}
+
+/**
+ * The attribute value Preact would write, or `null` to remove it.
+ */
+function attributeValue (
+    name:string,
+    value:ControlAttributes[string]
+):string|null {
+    if (value === null || value === undefined) return null
+    if (typeof value === 'boolean') {
+        if (name.startsWith('aria-')) return String(value)
+        return value ? '' : null
+    }
+    return String(value)
+}
+
 export class RadioInput extends WebComponent.create('radio-input') {
     static TAG:string = 'radio-input'
     private _input:HTMLInputElement|null = null
     // true if this element created the inner markup, false if it hydrated
     // markup that was already there
     private _ownsMarkup = false
+    // moves control attributes set on the host after render
+    private _observer = new MutationObserver(() => this._moveFromHost())
+    private _controlAttributes:ControlAttributes = {}
+    // names that `controlAttributes` put on the input last time
+    private _appliedControl:string[] = []
 
     static get observedAttributes () {
         return ['label', ...MIRRORED]
@@ -57,6 +97,22 @@ export class RadioInput extends WebComponent.create('radio-input') {
         } else {
             this.id = value
         }
+    }
+
+    /**
+     * Attributes for the inner input: `aria-*`, `tabindex`, and
+     * `autofocus`. Setting this replaces the last value, so a name it no
+     * longer lists is removed from the input. `null` clears them all.
+     */
+    get controlAttributes ():ControlAttributes {
+        return { ...this._controlAttributes }
+    }
+
+    set controlAttributes (value:ControlAttributes|null) {
+        this._controlAttributes = (value && typeof value === 'object') ?
+            { ...value } :
+            {}
+        this._applyControlAttributes()
     }
 
     /**
@@ -121,7 +177,45 @@ export class RadioInput extends WebComponent.create('radio-input') {
     }
 
     connectedCallback () {
+        // A value set before this element upgraded is an own property that
+        // hides the accessor. Remove it and set it again through the class.
+        if (Object.prototype.hasOwnProperty.call(this, 'controlAttributes')) {
+            const value = Reflect.get(this, 'controlAttributes')
+            Reflect.deleteProperty(this, 'controlAttributes')
+            this.controlAttributes = value
+        }
+
         this.render()
+        if (this._ownsMarkup) {
+            // Attributes set while disconnected were not observed
+            this._moveFromHost()
+            // No attribute filter, because `aria-*` names are open
+            this._observer.observe(this, { attributes: true })
+        }
+    }
+
+    disconnectedCallback () {
+        this._observer.disconnect()
+    }
+
+    /**
+     * Move control attributes from the host to the inner input. Removing
+     * one from the host is itself a mutation, but the next call finds
+     * nothing left to move.
+     */
+    private _moveFromHost () {
+        const input = this._input
+        if (!input) return
+
+        for (const { name, value } of Array.from(this.attributes)) {
+            if (!MOVED.includes(name) && !name.startsWith('aria-')) continue
+            this.removeAttribute(name)
+            if (name === 'id') {
+                this.inputId = value
+            } else {
+                input.setAttribute(name, value)
+            }
+        }
     }
 
     /**
@@ -136,6 +230,32 @@ export class RadioInput extends WebComponent.create('radio-input') {
         } else {
             input.setAttribute(name, value)
         }
+    }
+
+    /**
+     * Write `controlAttributes` to the inner input, and remove the names
+     * it set last time but no longer lists.
+     */
+    private _applyControlAttributes () {
+        const input = this._input
+        if (!input) return
+
+        const applied:string[] = []
+        for (const [name, value] of Object.entries(this._controlAttributes)) {
+            if (!isControlName(name)) continue
+            const attr = attributeValue(name, value)
+            if (attr === null) {
+                input.removeAttribute(name)
+            } else {
+                input.setAttribute(name, attr)
+                applied.push(name)
+            }
+        }
+
+        for (const name of this._appliedControl) {
+            if (!applied.includes(name)) input.removeAttribute(name)
+        }
+        this._appliedControl = applied
     }
 
     private _forwardMirrored () {
@@ -181,6 +301,7 @@ export class RadioInput extends WebComponent.create('radio-input') {
         if (existing) {
             this._input = existing
             this._forwardMirrored()
+            this._applyControlAttributes()
             return
         }
 
@@ -191,12 +312,8 @@ export class RadioInput extends WebComponent.create('radio-input') {
 
         // Before the input is in the DOM, so `autofocus` takes effect
         this._forwardMirrored()
-        for (const { name, value } of Array.from(this.attributes)) {
-            if (MOVED.includes(name) || name.startsWith('aria-')) {
-                input.setAttribute(name, value)
-                this.removeAttribute(name)
-            }
-        }
+        this._moveFromHost()
+        this._applyControlAttributes()
 
         this._renderLabel(this.getAttribute('label')?.trim() ?? '')
     }

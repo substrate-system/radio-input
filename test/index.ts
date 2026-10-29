@@ -217,6 +217,166 @@ test('inputId set before render ends up on the inner input', async t => {
     t.equal(el.id, '', 'host has no id')
 })
 
+/** Let pending MutationObserver callbacks run */
+function mutations ():Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, 0))
+}
+
+test('a control attribute set after render moves too', async t => {
+    document.body.innerHTML =
+        '<radio-input name="g" value="a" label="Late"></radio-input>'
+    const el = await waitFor('radio-input') as RadioInput
+    el.setAttribute('aria-invalid', 'true')
+    el.setAttribute('tabindex', '-1')
+    await mutations()
+    t.equal(el.control!.getAttribute('aria-invalid'), 'true',
+        'input gets aria-invalid')
+    t.equal(el.control!.getAttribute('tabindex'), '-1',
+        'input gets tabindex')
+    t.ok(!el.hasAttribute('aria-invalid'), 'host has no aria-invalid')
+    t.ok(!el.hasAttribute('tabindex'), 'host has no tabindex')
+})
+
+test('an id set after render moves to the input', async t => {
+    document.body.innerHTML =
+        '<radio-input name="g" value="a" label="Id"></radio-input>'
+    const el = await waitFor('radio-input') as RadioInput
+    el.id = 'late'
+    await mutations()
+    t.equal(el.control!.id, 'late', 'input has the id')
+    t.equal(el.id, '', 'host has no id')
+})
+
+test('a reconnected radio-input still moves attributes', async t => {
+    document.body.innerHTML =
+        '<radio-input name="g" value="a" label="Again"></radio-input>'
+    const el = await waitFor('radio-input') as RadioInput
+    el.remove()
+    document.body.append(el)
+    el.setAttribute('aria-describedby', 'hint')
+    await mutations()
+    t.equal(el.control!.getAttribute('aria-describedby'), 'hint',
+        'input gets aria-describedby')
+    t.ok(!el.hasAttribute('aria-describedby'), 'host does not keep it')
+})
+
+test('hydration does not move attributes set after render', async t => {
+    const el = document.createElement('radio-input') as RadioInput
+    const input = document.createElement('input')
+    input.type = 'radio'
+    el.append(input)
+    document.body.replaceChildren(el)
+    await waitFor('radio-input')
+    el.setAttribute('aria-invalid', 'true')
+    await mutations()
+    t.ok(!input.hasAttribute('aria-invalid'), 'app input is untouched')
+})
+
+test('controlAttributes puts attributes on the input only', async t => {
+    document.body.innerHTML =
+        '<radio-input name="g" value="a" label="Prop"></radio-input>'
+    const el = await waitFor('radio-input') as RadioInput
+    el.controlAttributes = { 'aria-describedby': 'hint', tabindex: 0 }
+    t.equal(el.control!.getAttribute('aria-describedby'), 'hint',
+        'input gets aria-describedby')
+    t.equal(el.control!.getAttribute('tabindex'), '0', 'input gets tabindex')
+    t.ok(!el.hasAttribute('aria-describedby'), 'host does not')
+})
+
+test('controlAttributes removes a name it no longer lists', async t => {
+    document.body.innerHTML =
+        '<radio-input name="g" value="a" label="Drop"></radio-input>'
+    const el = await waitFor('radio-input') as RadioInput
+    el.controlAttributes = { 'aria-invalid': 'true', 'aria-label': 'x' }
+    el.controlAttributes = { 'aria-label': 'x' }
+    t.ok(!el.control!.hasAttribute('aria-invalid'), 'aria-invalid is gone')
+    t.equal(el.control!.getAttribute('aria-label'), 'x', 'others stay')
+    el.controlAttributes = null
+    t.ok(!el.control!.hasAttribute('aria-label'), 'null clears all')
+    el.controlAttributes = { 'aria-label': 'x' }
+    Reflect.set(el, 'controlAttributes', '')
+    t.ok(!el.control!.hasAttribute('aria-label'), 'empty string clears all')
+})
+
+test('controlAttributes set before render reaches the input', async t => {
+    const el = document.createElement('radio-input') as RadioInput
+    el.setAttribute('label', 'Early')
+    el.controlAttributes = { 'aria-required': true }
+    document.body.replaceChildren(el)
+    await waitFor('radio-input')
+    t.equal(el.control!.getAttribute('aria-required'), 'true',
+        'input has aria-required')
+})
+
+test('controlAttributes ignores names it does not move', async t => {
+    document.body.innerHTML =
+        '<radio-input name="g" value="a" label="Ignore"></radio-input>'
+    const el = await waitFor('radio-input') as RadioInput
+    el.controlAttributes = { name: 'x', id: 'y' }
+    t.equal(el.control!.getAttribute('name'), 'g', 'name is unchanged')
+    t.notEqual(el.control!.id, 'y', 'id is ignored')
+})
+
+test('controlAttributes writes booleans as Preact does', async t => {
+    document.body.innerHTML =
+        '<radio-input name="g" value="a" label="Bools"></radio-input>'
+    const el = await waitFor('radio-input') as RadioInput
+    el.controlAttributes = { 'aria-invalid': false, autofocus: true }
+    t.equal(el.control!.getAttribute('aria-invalid'), 'false',
+        'aria false is the string "false"')
+    t.equal(el.control!.getAttribute('autofocus'), '', 'true is present')
+    el.controlAttributes = { autofocus: false }
+    t.ok(!el.control!.hasAttribute('autofocus'), 'false removes it')
+})
+
+test('controlAttributes survive a label change', async t => {
+    document.body.innerHTML =
+        '<radio-input name="g" value="a" label="One"></radio-input>'
+    const el = await waitFor('radio-input') as RadioInput
+    el.controlAttributes = { 'aria-describedby': 'hint' }
+    el.setAttribute('label', 'Two')
+    t.equal(el.control!.getAttribute('aria-describedby'), 'hint',
+        'property value is kept')
+})
+
+test('controlAttributes touches only its own radio', async t => {
+    document.body.innerHTML =
+        '<radio-input name="g" value="a" label="A"></radio-input>' +
+        '<radio-input name="g" value="b" label="B"></radio-input>'
+    await waitFor('radio-input')
+    const [a, b] = Array.from(
+        document.querySelectorAll('radio-input')
+    ) as RadioInput[]
+    a.controlAttributes = { 'aria-invalid': 'true' }
+    t.ok(!b.control!.hasAttribute('aria-invalid'), 'b is untouched')
+})
+
+test('controlAttributes applies to a hydrated input', async t => {
+    const el = document.createElement('radio-input') as RadioInput
+    const input = document.createElement('input')
+    input.type = 'radio'
+    el.append(input)
+    el.controlAttributes = { 'aria-invalid': 'true' }
+    document.body.replaceChildren(el)
+    await waitFor('radio-input')
+    t.equal(input.getAttribute('aria-invalid'), 'true', 'app input has it')
+})
+
+test('controlAttributes set before upgrade still works', async t => {
+    // A document with no browsing context does not upgrade custom elements
+    const doc = document.implementation.createHTMLDocument('')
+    const el = doc.createElement('radio-input') as RadioInput
+    el.setAttribute('label', 'Upgrade')
+    el.controlAttributes = { 'aria-invalid': 'true' }
+    document.body.replaceChildren(el)
+    await waitFor('radio-input input')
+    t.equal(el.control!.getAttribute('aria-invalid'), 'true',
+        'input gets the value set before upgrade')
+    el.controlAttributes = null
+    t.ok(!el.control!.hasAttribute('aria-invalid'),
+        'setting it after upgrade still clears it')
+})
+
 test('all done', () => {
     // @ts-expect-error browser global
     window.testsFinished = true
