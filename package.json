@@ -1,6 +1,6 @@
 {
   "name": "@substrate-system/radio-input",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "type": "module",
   "description": "Radio input with style",
   "main": "dist/index.js",
